@@ -1,5 +1,8 @@
 import json
 import praw
+import os
+
+connString = os.environ['MONGODB_CONNSTRING']
 
 with open('reddit_access.json', 'r') as f:
     creds = json.load(f)
@@ -20,7 +23,7 @@ cities_list = cities_json['City List']
 cities_str = '+'.join(cities_list)
 
 for city in cities_list:
-    for submission in reddit.subreddit(city).top(time_filter="day", limit=10):
+    for submission in reddit.subreddit(city).top(time_filter="day", limit=25):
         print(submission.subreddit)
-        break
+
 
