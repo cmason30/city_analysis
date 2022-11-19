@@ -8,8 +8,8 @@ WORKDIR /app
 
 RUN pip install praw
 
-COPY scraperfiles .
-COPY datafiles .
+COPY . .
+RUN cd ../ & COPY ../datafiles .
 
 CMD ["python","-u", "conv_scraper.py"]
 
