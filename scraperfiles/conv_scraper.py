@@ -33,7 +33,7 @@ bulk_subs = []
 
 count_ = 0
 for city in cities_list:
-    for submission in reddit.subreddit(city).top(time_filter="day", limit=25):
+    for submission in reddit.subreddit(city).top(time_filter="day", limit=10):
 
         if submission.selftext == "":
             self_text = "empty"
