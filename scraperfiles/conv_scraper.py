@@ -8,7 +8,7 @@ cwd_ = os.getcwd()
 #connString = os.environ['MONGODB_CONNSTRING']
 client = pymongo.MongoClient('localhost', 27017)
 
-mydb = client['citytest1' # Set up
+mydb = client['citytest1'] # Set up
 posts = mydb.posts
 
 with open(f'{cwd_}/scraperfiles/reddit_access.json', 'r') as f:
