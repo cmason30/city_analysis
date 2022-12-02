@@ -2,7 +2,7 @@ import json
 import praw
 import os
 import time
-import pymongo
+#import pymongo
 
 cwd_ = os.getcwd()
 
@@ -12,7 +12,7 @@ cwd_ = os.getcwd()
 # mydb = client['citytest1'] # Set up
 # posts = mydb.posts
 
-with open(f'{cwd_}/scraperfiles/reddit_access.json', 'r') as f:
+with open(f'reddit_access.json', 'r') as f:
     creds = json.load(f)
 
 reddit = praw.Reddit(
@@ -23,7 +23,7 @@ reddit = praw.Reddit(
     username=creds['Creds']['account'],
 )
 
-with open(f'{cwd_}/datafiles/city_subreddits.json', 'r') as f:
+with open(f'city_subreddits.json', 'r') as f:
     cities_json = json.load(f)
 
 cities_list = cities_json['City List']

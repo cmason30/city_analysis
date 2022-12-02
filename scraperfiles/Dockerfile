@@ -9,7 +9,7 @@ WORKDIR /app
 RUN pip install praw
 
 COPY . .
-RUN cd ../ & COPY ../datafiles .
+#RUN cd ../ & COPY ../datafiles .
 
 CMD ["python", "-u", "conv_scraper.py"]
 
