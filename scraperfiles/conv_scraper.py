@@ -1,15 +1,16 @@
 import json
 import praw
 import os
+import time
 import pymongo
 
 cwd_ = os.getcwd()
 
 #connString = os.environ['MONGODB_CONNSTRING']
-client = pymongo.MongoClient('localhost', 27017)
+#client = pymongo.MongoClient('localhost', 27017)
 
-mydb = client['citytest1'] # Set up
-posts = mydb.posts
+# mydb = client['citytest1'] # Set up
+# posts = mydb.posts
 
 with open(f'{cwd_}/scraperfiles/reddit_access.json', 'r') as f:
     creds = json.load(f)
@@ -55,9 +56,14 @@ for city in cities_list:
         break
     count_ += 1
 
-result = posts.insert_many(bulk_subs)
+print(bulk_subs)
 
-print(client.list_database_names())
+#unix_t = round(time.time())
+
+
+#result = posts.insert_many(bulk_subs)
+
+#print(client.list_database_names())
 
 
 

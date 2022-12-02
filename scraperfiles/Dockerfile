@@ -11,7 +11,7 @@ RUN pip install praw
 COPY . .
 RUN cd ../ & COPY ../datafiles .
 
-CMD ["python","-u", "conv_scraper.py"]
+CMD ["python", "-u", "conv_scraper.py"]
 
 
 
