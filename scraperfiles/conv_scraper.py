@@ -1,17 +1,32 @@
 import json
+
+import nltk
 import praw
+import pickle
 import os
-import pymongo
+import time
+import re
+import statistics as stat
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.sentiment import SentimentIntensityAnalyzer
+#import pymongo
 
 cwd_ = os.getcwd()
 
 #connString = os.environ['MONGODB_CONNSTRING']
-client = pymongo.MongoClient('localhost', 27017)
+#client = pymongo.MongoClient('localhost', 27017)
 
-mydb = client['citytest1' # Set up
-posts = mydb.posts
+# mydb = client['citytest1'] # Set up
+# posts = mydb.posts
 
-with open(f'{cwd_}/scraperfiles/reddit_access.json', 'r') as f:
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('vader_lexicon')
+stop_words = set(stopwords.words('english'))
+sia = SentimentIntensityAnalyzer()
+
+with open(f'scraperfiles/reddit_access.json', 'r') as f:
     creds = json.load(f)
 
 reddit = praw.Reddit(
@@ -22,7 +37,7 @@ reddit = praw.Reddit(
     username=creds['Creds']['account'],
 )
 
-with open(f'{cwd_}/datafiles/city_subreddits.json', 'r') as f:
+with open(f'scraperfiles/city_subreddits.json', 'r') as f:
     cities_json = json.load(f)
 
 cities_list = cities_json['City List']
@@ -41,23 +56,54 @@ for city in cities_list:
 
             self_text = submission.selftext
 
+        #comments = [i.body for i in submission.comments]
+        submission.comments.replace_more(limit=0)  # flatten tree
+        comments = submission.comments.list()  # all comments
+
+        f_com = []
+        for comment in comments:
+            com_list = []
+            comment_rem = re.sub(r'http\S+', '', comment.body)
+            comment_rem = re.sub(r'[^\w\s]', '', comment_rem)
+            word_tokens = word_tokenize(comment_rem)
+            for w in word_tokens:
+                if w not in stop_words:
+                    com_list.append(w)
+            f_com.append(com_list)
+
+        mean_l = []
+        for i in f_com:
+            com = " ".join(i)
+            mean_l.append(sia.polarity_scores(com)['compound'])
+
         city_dict = {
             "subreddit": city,
             "created_utc": submission.created_utc,
             "num_comments": submission.num_comments,
             "selftext": self_text,
-            "title": submission.title
+            "title": submission.title,
+            "comments": f_com,
+            "lat": cities_list[city]['lat'],
+            "lon": cities_list[city]['lon']
         }
 
         bulk_subs.append(city_dict)
-        break
-    if count_ == 5:
+        #break
+    if count_ == 15:
         break
     count_ += 1
+    #break
 
-result = posts.insert_many(bulk_subs)
+with open('test1_data.pickle', 'wb') as handle:
+    pickle.dump(bulk_subs, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-print(client.list_database_names())
+
+#unix_t = round(time.time())
+
+
+#result = posts.insert_many(bulk_subs)
+
+#print(client.list_database_names())
 
 
 
