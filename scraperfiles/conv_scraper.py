@@ -76,16 +76,15 @@ for city in cities_list:
             com = " ".join(i)
             mean_l.append(sia.polarity_scores(com)['compound'])
 
-
-
-
         city_dict = {
             "subreddit": city,
             "created_utc": submission.created_utc,
             "num_comments": submission.num_comments,
             "selftext": self_text,
             "title": submission.title,
-            "comments": f_com
+            "comments": f_com,
+            "lat": cities_list[city]['lat'],
+            "lon": cities_list[city]['lon']
         }
 
         bulk_subs.append(city_dict)
