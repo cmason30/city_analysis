@@ -2,6 +2,7 @@ import json
 
 import nltk
 import praw
+import pickle
 import os
 import time
 import re
@@ -75,7 +76,7 @@ for city in cities_list:
             com = " ".join(i)
             mean_l.append(sia.polarity_scores(com)['compound'])
 
-        print(stat.variance(mean_l))
+
 
 
         city_dict = {
@@ -84,16 +85,19 @@ for city in cities_list:
             "num_comments": submission.num_comments,
             "selftext": self_text,
             "title": submission.title,
-            #"comments": f_com
+            "comments": f_com
         }
 
         bulk_subs.append(city_dict)
-        break
-    if count_ == 5:
+        #break
+    if count_ == 15:
         break
     count_ += 1
     #break
-print(bulk_subs)
+
+with open('test1_data.pickle', 'wb') as handle:
+    pickle.dump(bulk_subs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
 #unix_t = round(time.time())
 
