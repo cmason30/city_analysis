@@ -1,14 +1,14 @@
-FROM python:3.9-alpine
+FROM public.ecr.aws/lambda/python:3.9
 
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
+#RUN apk update && apk upgrade && \
+#    apk add --no-cache bash git openssh
 
-RUN mkdir /app
-WORKDIR /app
+#RUN mkdir /app
+#WORKDIR /app
 
 RUN pip install praw
 
-COPY . .
+COPY . . ${LAMBDA_TASK_ROOT}
 #RUN cd ../ & COPY ../datafiles .
 
 CMD ["python", "-u", "conv_scraper.py"]
