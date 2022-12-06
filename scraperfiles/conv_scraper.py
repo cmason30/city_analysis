@@ -7,9 +7,9 @@ import os
 import time
 import re
 import statistics as stat
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.sentiment import SentimentIntensityAnalyzer
+from transformers import pipeline
+
+
 #import pymongo
 
 cwd_ = os.getcwd()
@@ -20,11 +20,7 @@ cwd_ = os.getcwd()
 # mydb = client['citytest1'] # Set up
 # posts = mydb.posts
 
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('vader_lexicon')
-stop_words = set(stopwords.words('english'))
-sia = SentimentIntensityAnalyzer()
+model = pipeline('sentiment-analysis', model="finiteautomata/bertweet-base-sentiment-analysis")
 
 with open(f'scraperfiles/reddit_access.json', 'r') as f:
     creds = json.load(f)
@@ -63,13 +59,15 @@ for city in cities_list:
         f_com = []
         for comment in comments:
             com_list = []
-            comment_rem = re.sub(r'http\S+', '', comment.body)
-            comment_rem = re.sub(r'[^\w\s]', '', comment_rem)
-            word_tokens = word_tokenize(comment_rem)
-            for w in word_tokens:
-                if w not in stop_words:
-                    com_list.append(w)
-            f_com.append(com_list)
+            comment_rem = re.sub(r'http\S+|[^\w\s]', '', comment.body)
+            #omment_rem = re.sub(r'[^\w\s]', '', comment_rem)
+
+            print(model(comment_rem), comment_rem)
+            #word_tokens = word_tokenize(comment_rem)
+            # for w in word_tokens:
+            #     if w not in stop_words:
+            #         com_list.append(w)
+            # f_com.append(com_list)
 
         mean_l = []
         for i in f_com:
@@ -88,11 +86,11 @@ for city in cities_list:
         }
 
         bulk_subs.append(city_dict)
-        #break
+        break
     if count_ == 15:
         break
     count_ += 1
-    #break
+    break
 
 with open('test1_data.pickle', 'wb') as handle:
     pickle.dump(bulk_subs, handle, protocol=pickle.HIGHEST_PROTOCOL)
