@@ -8,8 +8,8 @@ FROM public.ecr.aws/lambda/python:3.9
 
 RUN pip install praw
 
-COPY . . ${LAMBDA_TASK_ROOT}
-#RUN cd ../ & COPY ../datafiles .
+COPY scraperfiles . ${LAMBDA_TASK_ROOT}
+#RUN cd ../ & COPY ../data .
 
 CMD ["python", "-u", "conv_scraper.py"]
 
