@@ -87,7 +87,7 @@ def extract_comments():
 if __name__ == "__main__":
 
     city_output = extract_comments()
-    with open('test1_data.pickle', 'wb') as handle:
-        pickle.dump(city_output, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open("test1.json", "w") as outfile:
+        json.dump(city_output, outfile)
 
 

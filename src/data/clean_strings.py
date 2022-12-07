@@ -1,6 +1,7 @@
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import pickle
+import json
 
 def get_sentiment(comment):
     stopwords = nltk.corpus.stopwords.words("english")
@@ -10,10 +11,11 @@ def get_sentiment(comment):
     return sia.polarity_scores(cleaned_text)
 
 
-with open('/Users/colinmason/Desktop/python-projects/city_analysis/test1_data.pickle', 'rb') as f:
-    data = pickle.load(f)
+with open("../../data/interim/test1.json", "r") as f:
+    data = json.load(f)
 
-print(data)
+
+
 
 
 
