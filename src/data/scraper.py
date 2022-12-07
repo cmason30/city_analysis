@@ -1,18 +1,11 @@
 import json
-
-import nltk
 import praw
 import pickle
-import os
-import time
 import re
-import statistics as stat
-from transformers import pipeline
-
-
+from dotenv import load_dotenv
+from datetime import datetime
+import os
 #import pymongo
-
-cwd_ = os.getcwd()
 
 #connString = os.environ['MONGODB_CONNSTRING']
 #client = pymongo.MongoClient('localhost', 27017)
@@ -22,33 +15,50 @@ cwd_ = os.getcwd()
 
 
 def load_files():
-    with open(f'scraperfiles/reddit_access.json', 'r') as f:
-        creds = json.load(f)
 
-    with open(f'scraperfiles/city_subreddits.json', 'r') as f:
+    path = r"../../../data"
+    with open('/Users/colinmason/Desktop/python-projects/city_analysis/data/city_subreddits.json', 'r') as f:
         cities_json = json.load(f)
 
-    return creds, cities_json
+    return cities_json
+
+def get_creds(): # Loads environment variables for API keys
+    load_dotenv()
+
+    return os.environ
+
+
+
+
 
 
 def extract_comments():
 
-    creds, cities_json = load_files()
+    cities_json = load_files()
+    creds = get_creds()
 
     reddit = praw.Reddit(
-        client_id=creds['Creds']['client_id'],
-        client_secret=creds['Creds']['client_secret'],
-        password=creds['Creds']['password'],
+        client_id=creds['CLIENTID'],
+        client_secret=creds["CLIENTSECRET"],
+        password=creds["PASSWORD"],
         user_agent="testscript_",
-        username=creds['Creds']['account'],
+        username=creds['USERNAME'],
     )
 
-    cities_list = cities_json['City List']
-    cities_str = '+'.join(cities_list)
+    out_dict = {}
+    today_date = datetime.today().strftime('%Y-%m-%d')
+    out_dict[today_date] = {}
 
-    count_ = 0
+    cities_list = cities_json['City List']
+    total_cities = len(cities_list)
+    cnt_ = 0
 
     for city in cities_list:
+
+        out_dict[today_date][city] = {}
+
+        cnt_ += 1
+        print(f"Extracting data from subreddit: {city}... \t {cnt_}/{total_cities}")
 
         all_subs_city = []
         subreddit_ = reddit.subreddit(city)
@@ -66,38 +76,24 @@ def extract_comments():
             cleaned_com = [re.sub(r'http\S+|[^\w\s]', '', com.body) for com in comments]
 
             submission_dict = {
-                #"subreddit": city,
                 "created_utc": submission.created_utc,
                 "num_comments": submission.num_comments,
                 "selftext": self_text,
                 "title": submission.title,
                 "comments": cleaned_com,
-                #"lat": cities_list[city]['lat'],
-                #"lon": cities_list[city]['lon']
             }
 
             all_subs_city.append(submission_dict)
 
-        cities_json['City List'][city]['data'] = all_subs_city
+        out_dict[today_date][city]['data'] = all_subs_city
 
-        if count_ == 5:
-            break
-        count_ += 1
-        break
-
-    print(cities_json)
-# with open('test1_data.pickle', 'wb') as handle:
-#     pickle.dump(bulk_subs, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-extract_comments()
+    return cities_json
 
 
-#unix_t = round(time.time())
+if __name__ == "__main__":
 
-
-#result = posts.insert_many(bulk_subs)
-
-#print(client.list_database_names())
-
+    city_output = extract_comments()
+    with open('test1_data.pickle', 'wb') as handle:
+        pickle.dump(city_output, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
