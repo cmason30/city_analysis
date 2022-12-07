@@ -5,22 +5,15 @@ import re
 from dotenv import load_dotenv
 from datetime import datetime
 import os
-#import pymongo
-
-#connString = os.environ['MONGODB_CONNSTRING']
-#client = pymongo.MongoClient('localhost', 27017)
-
-# mydb = client['citytest1'] # Set up
-# posts = mydb.posts
 
 
-def load_files():
+def load_files(): # Gets initial City JSON file
 
-    path = r"../../../data"
     with open('/Users/colinmason/Desktop/python-projects/city_analysis/data/city_subreddits.json', 'r') as f:
         cities_json = json.load(f)
 
     return cities_json
+
 
 def get_creds(): # Loads environment variables for API keys
     load_dotenv()
@@ -28,11 +21,9 @@ def get_creds(): # Loads environment variables for API keys
     return os.environ
 
 
-
-
-
-
 def extract_comments():
+    """Extracts comments from 54 city subreddits. Returns a nested dictionary:
+    {Current Date: {City Subreddit: {lat:int, lon:int, Data:{[comment1, comment2, comment3,...'"""
 
     cities_json = load_files()
     creds = get_creds()
@@ -85,15 +76,18 @@ def extract_comments():
 
             all_subs_city.append(submission_dict)
 
+        out_dict[today_date][city]['lat'] = cities_list[city]['lat']
+        out_dict[today_date][city]['lon'] = cities_list[city]['lon']
+
         out_dict[today_date][city]['data'] = all_subs_city
 
-    return cities_json
+    return out_dict
 
 
 if __name__ == "__main__":
 
     city_output = extract_comments()
-    with open('test1_data.pickle', 'wb') as handle:
-        pickle.dump(city_output, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open("test1.json", "w") as outfile:
+        json.dump(city_output, outfile)
 
 
