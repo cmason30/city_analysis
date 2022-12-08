@@ -1,6 +1,6 @@
 # What Are People Saying About Cities Across the USA?
 
-This is a personal project of mine to develop my data engineering skills as well as showcase the discussions of the fifty largest cities across the USA. Work on this project is ongoing and involves the following steps:
+This is a personal project of mine to develop my data engineering skills as well as showcase the discussions on Reddit of the fifty largest cities across the USA. Work on this project is ongoing and involves the following steps:
 
 1. ~~Pull Reddit submissions and comments from PRAW API once per day.~~
 2. ~~Design JSON format for data storage~~
