@@ -21,6 +21,12 @@ def get_creds(): # Loads environment variables for API keys
     return os.environ
 
 
+def clean_text(text):
+
+    return re.sub(r'http\S+|[^\w\s]', '', text)
+
+
+
 def extract_comments():
     """Extracts comments from 54 city subreddits. Returns a nested dictionary:
     {Current Date: {City Subreddit: {lat:int, lon:int, Data:{[comment1, comment2, comment3,...'"""
@@ -40,7 +46,7 @@ def extract_comments():
     today_date = datetime.today().strftime('%Y-%m-%d')
     out_dict[today_date] = {}
 
-    cities_list = cities_json['City List']
+    cities_list = cities_json['city_subreddits']
     total_cities = len(cities_list)
     cnt_ = 0
 
@@ -54,24 +60,23 @@ def extract_comments():
         all_subs_city = []
         subreddit_ = reddit.subreddit(city)
 
-        for submission in subreddit_.top(time_filter="day", limit=10):
+        for submission in subreddit_.top(time_filter="day"):
 
             if submission.selftext == "":
                 self_text = "empty"
             else:
-                self_text = submission.selftext
+                self_text = clean_text(submission.selftext)
 
-            submission.comments.replace_more(limit=0)  # flatten tree
-            comments = submission.comments.list()  # all comments
-
-            cleaned_com = [re.sub(r'http\S+|[^\w\s]', '', com.body) for com in comments]
+            # submission.comments.replace_more(limit=0)  # flatten tree
+            # comments = submission.comments.list()  # all comments
+            #cleaned_text = [re.sub(r'http\S+|[^\w\s]', '', com.body) for com in comments]
 
             submission_dict = {
                 "created_utc": submission.created_utc,
                 "num_comments": submission.num_comments,
                 "selftext": self_text,
-                "title": submission.title,
-                "comments": cleaned_com,
+                "title": clean_text(submission.title),
+                #"comments": cleaned_com,
             }
 
             all_subs_city.append(submission_dict)
@@ -79,7 +84,7 @@ def extract_comments():
         out_dict[today_date][city]['lat'] = cities_list[city]['lat']
         out_dict[today_date][city]['lon'] = cities_list[city]['lon']
 
-        out_dict[today_date][city]['data'] = all_subs_city
+        out_dict[today_date][city]['submission'] = all_subs_city
 
     return out_dict
 
@@ -87,7 +92,7 @@ def extract_comments():
 if __name__ == "__main__":
 
     city_output = extract_comments()
-    with open("test1.json", "w") as outfile:
+    with open("test_only_title.json", "w") as outfile:
         json.dump(city_output, outfile)
 
 

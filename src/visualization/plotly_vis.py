@@ -2,14 +2,11 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import pickle
+
 import json
 
-with open(f'city_subreddits.json', 'r') as f:
+with open(f'data/interim/test1.json', 'r') as f:
     cities_json = json.load(f)
-
-
-with open('test1_data.pickle', 'rb') as f:
-    x = pickle.load(f)
 
 limits = [(-1.0,-0.5),(-.49,-.25),(-.24,-.1),(-.9,.9),(.1,1)]
 colors = ["royalblue","crimson","lightseagreen","orange","lightgrey"]
